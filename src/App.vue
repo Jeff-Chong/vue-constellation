@@ -1,32 +1,29 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <app-header></app-header>
+    <tab-bar></tab-bar>
+    <div class="view">
+      <router-view></router-view>
     </div>
-    <router-view/>
+    <app-nav></app-nav>
   </div>
 </template>
 
+<script>
+import TabBar from '@/components/Tab'
+import AppNav from '@/components/Nav'
+import AppHeader from '@/components/Header'
+export default {
+  name: 'app',
+  components: { AppHeader, AppNav, TabBar }
+}
+</script>
+
 <style lang="scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  position: relative;
+  margin: 0 auto;
+  max-width: 50rem;
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
+.view { padding: 4.5rem 0 2.8rem; }
 </style>
