@@ -13,7 +13,7 @@ import { prop, setProp } from '../util/fp-helpers'
  */
 let constellations = {}
 
-const freezeConstellations = Object({
+const freezeConstellations = Object.freeze({
   hasItem,
   addItem,
   getConstellations
