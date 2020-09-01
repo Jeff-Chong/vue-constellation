@@ -1,21 +1,22 @@
 <template>
-  <div class="tomorrow-view">
-    <div class="py-1"></div>
+  <layout-view>
+
     <view-banner
-      v-if="activePageData"
-      :image-url="image"
-      :title="activePageData.name"
-      :indicator="activePageData.all"
+      v-if="pageData"
+      :image-url="bannerImg"
+      :title="pageData.name"
+      :indicator="pageData.all"
+      class="py-3"
     ></view-banner>
-    <div class="py-1"></div>
-    <!-- 基本信息和运势 -->
-    <div class="text-content p-2" v-if="baseInfos.length > 0">
+
+    <!-- 基本信息和运势 start -->
+    <div class="px-3 pb-3">
       <desc-line
         v-for="baseItem of baseInfos"
-        :key="baseItem.prefix"
-        :prefix="baseItem.prefix"
+        :key="baseItem.title"
+        :title="baseItem.title"
         :content="baseItem.content"
-        class="mb-4"
+        class="mb-3"
       ></desc-line>
       <desc-card
         v-for="descItem of descInfos"
@@ -25,47 +26,49 @@
       >
       </desc-card>
     </div>
-  </div>
+    <!-- 基本信息和运势 end -->
+
+  </layout-view>
 </template>
 
 <script>
-import DescLine from '@/components/DescLine'
-import DescCard from '@/components/DescCard'
-import ViewBanner from '@/components/banner'
-import { DispatchTypeMixin, GetImageMixin } from '../util/mixins'
+import { mapGetters } from 'vuex'
+import { ImageMixin } from '../mixins'
 export default {
   name: 'tomorrow-view',
-  mixins: [DispatchTypeMixin, GetImageMixin],
-  components: { DescLine, DescCard, ViewBanner },
+  mixins: [ ImageMixin ],
   computed: {
+    ...mapGetters({
+      pageData: 'currentPageData'
+    }),
     baseInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['datetime', '明天日期'],
-                    ['QFriend', '配对星座'],
-                    ['color', '幸运颜色'],
-                    ['number', '幸运数字']
-                  ].map(([prop, about]) => {
-                    return {
-                      prefix: about,
-                      content: this.activePageData[prop]
-                    }
-                  })
+          ['datetime', '明天日期'],
+          ['QFriend', '配对星座'],
+          ['color', '幸运颜色'],
+          ['number', '幸运数字']
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop]
+          }
+        })
       }
       return retVal
     },
     descInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['summary', '明天运势总结'],
-                  ].map(([prop, about]) => {
-                    return {
-                      title: about,
-                      content: this.activePageData[prop]
-                    }
-                  })
+          ['summary', '明天运势总结'],
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop]
+          }
+        })
       }
       return retVal
     }

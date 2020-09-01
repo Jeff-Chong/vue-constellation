@@ -1,4 +1,4 @@
-export default [
+export const tabList = [
   {
     name: '摩羯座',
     data: '摩羯座'

@@ -1,13 +1,13 @@
 <template>
-  <div class="desc-line bg-white p-2-5 border border-radius">
-    <span class="prefix text-second mr-3">{{ prefix }}</span>
-    <span class="content">{{ content }}</span>
+  <div class="bg-white py-2 px-1 border rounded-md relative">
+    <span class="absolute text-pink-700 w-20 text-center tracking-tight">{{title}}</span>
+    <p class="pl-20">{{content}}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'desc-line',
-  props: ['prefix', 'content']
+  props: ['title', 'content']
 }
 </script>

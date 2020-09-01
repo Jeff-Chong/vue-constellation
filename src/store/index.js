@@ -1,70 +1,87 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { fetchConstellationData } from '../api'
-import constellations from './constellations'
+import { requestRejected } from '../_helpers'
+import { constellationApi as api } from '../api'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    activeConsName: '摩羯座',
-    activeType: null,
-    itemsCache: {}
+    errorMsg: '',
+    fetching: false,
+    fetchedCached: {},
+    currentType: 'today',
+    currentConsName: '摩羯座',
   },
   mutations: {
-    SET_ACTIVE_CONS (state, consName = '摩羯座') {
-      state.activeConsName = consName
+    SET_CURRENT_TYPE (state, type) {
+      state.currentType = type
+      state.fetching = false
+      state.errorMsg = ''
     },
-    SET_ACTIVE_TYPE (state, type = 'today') {
-      state.activeType = type
+
+    SET_CURRENT_CONS (state, consName) {
+      state.currentConsName = consName
+      state.fetching = false
+      state.errorMsg = ''
     },
-    SET_ITEM_DATA (state) {
-      // 重新赋值会触发响应
-      state.itemsCache = constellations.getConstellations()
+
+    START_FETCHING (state) {
+      state.fetching = true
+      state.errorMsg = ''
+    },
+    FETCHED (state, { consName, type, data }) {
+      state.fetching = false
+      state.errorMsg = ''
+      const typeCache = Object.assign({}, state.fetchedCached[type], { [consName]: data })
+      state.fetchedCached = Object.assign({}, state.fetchedCached, { [type]: typeCache })
+    },
+    FETCHED_FAIL (state, message) {
+      state.fetching = false
+      state.errorMsg = message
     }
   },
   actions: {
-    CHANGE_CONS_NAME ({ commit, dispatch }, { consName }) {
-      commit('SET_ACTIVE_CONS', consName)
-      dispatch('FETCH_CONSTELLATION_DATA')
+    changeType ({ state, commit, dispatch }, { type = 'today' } = {}) {
+      commit('SET_CURRENT_TYPE', type)
+      dispatch('fetch', { consName: state.currentConsName, type })
     },
-    CHANGE_TYPE ({ commit, dispatch }, { type }) {
-      commit('SET_ACTIVE_TYPE', type)
-      dispatch('FETCH_CONSTELLATION_DATA')
+
+    changeConsName ({state, commit, dispatch }, { consName = '摩羯座' } = {}) {
+      commit('SET_CURRENT_CONS', consName)
+      dispatch('fetch', { consName, type: state.currentType })
     },
-    FETCH_CONSTELLATION_DATA ({ state, commit }) {
-      const { activeConsName, activeType } = state
-      // Vuex 也是缓存的一种，请求数据是否存在
-      if (activeType && activeConsName) {
-        if (constellations.hasItem({ consName: activeConsName, type: activeType })) {
-          console.log('资源已经获取在缓存，不必重新获取')
-          return
-        }
+
+    fetch ({ commit, state }, {consName, type}) {
+      if (state.fetchedCached[type] && state.fetchedCached[type][consName]) {
+        return Promise.resolve(state.fetchedCached[type][consName])
       }
-      if (activeType && activeConsName) {
-        fetchConstellationData({
-          consName: activeConsName,
-          type: activeType
-        }).then(function onFetchCons (result) {
-          constellations.addItem({ consName: activeConsName, type: activeType, data: result })
-          commit('SET_ITEM_DATA')
-        }).catch(error => console.log('获取数据发生错误：', error))
-      }
+
+      commit('START_FETCHING')
+      return api.fetchConstellationData({consName, type})
+        .then(
+          result => {
+            commit('FETCHED', { consName, type, data: result})
+            return result
+          },
+          requestRejected()
+        ).catch(message => { commit('FETCHED_FAIL', message) })
     }
   },
   getters: {
-    activePageData (state) {
-      const { activeType, activeConsName, itemsCache } = state
+    currentPageData (state) {
+      const { currentType, currentConsName, fetchedCached } = state
       let retVal = null
-      if (!activeType) {
+      if (!currentType) {
         return retVal
       }
-      if (!itemsCache[activeType]) {
+      if (!fetchedCached[currentType]) {
         return retVal
       }
-      if (itemsCache[activeType][activeConsName]) {
-        retVal = itemsCache[activeType][activeConsName]
+      if (fetchedCached[currentType][currentConsName]) {
+        retVal = fetchedCached[currentType][currentConsName]
       }
+
       return retVal
     }
   }
