@@ -1,10 +1,10 @@
 <template>
-  <div class="desc-card border">
-    <header class="header bg-second">
-      <h2 class="m-0 text-center text-white py-2 fs-xxl text-normal">{{ title }}</h2>
+  <div class="border">
+    <header class="bg-pink-600">
+      <h2 class="h-10 leading-10 font-bold text-center text-white">{{ title }}</h2>
     </header>
     <main class="bg-white">
-      <article class="content fs-lg p-2">
+      <article class="p-2" style="text-indent: 2em">
         {{ content }}
       </article>
     </main>
@@ -17,11 +17,3 @@ export default {
   props: ['title', 'content']
 }
 </script>
-
-<style lang="scss">
-.desc-card {
-  .content {
-    text-indent: 2em;
-  }
-}
-</style>

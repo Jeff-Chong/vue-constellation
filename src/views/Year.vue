@@ -1,17 +1,18 @@
 <template>
-  <div class="year-view">
-    <div class="py-1"></div>
+  <layout-view>
+
     <view-banner
-      v-if="activePageData"
-      :image-url="image"
-      :title="activePageData.name"
+      v-if="pageData"
+      :image-url="bannerImg"
+      :title="pageData.name"
+      class="py-3"
     ></view-banner>
-    <div class="py-2"></div>
-    <div class="text-content p-2 pb-0" v-if="baseInfos.length > 0">
+
+    <div class="px-3 overflow-hidden">
       <desc-line
         v-for="baseItem of baseInfos"
-        :key="baseItem.prefix"
-        :prefix="baseItem.prefix"
+        :key="baseItem.title"
+        :title="baseItem.title"
         :content="baseItem.content"
         class="mb-3"
       ></desc-line>
@@ -24,48 +25,48 @@
       >
       </desc-card>
     </div>
-  </div>
+  </layout-view>
 </template>
 
 <script>
-import DescLine from '@/components/DescLine'
-import DescCard from '@/components/DescCard'
-import ViewBanner from '@/components/banner'
-import { DispatchTypeMixin, GetImageMixin } from '../util/mixins'
+import { mapGetters } from 'vuex'
+import { ImageMixin } from '../mixins'
 export default {
   name: 'year-view',
-  mixins: [DispatchTypeMixin, GetImageMixin],
-  components: { DescLine, DescCard, ViewBanner },
+  mixins: [ ImageMixin ],
   computed: {
+    ...mapGetters({
+      pageData: 'currentPageData'
+    }),
     baseInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['date', '所在年份'],
-                    ['luckeyStone', '幸运石头']
-                  ].map(([prop, about]) => {
-                    return {
-                      prefix: about,
-                      content: this.activePageData[prop]
-                    }
-                  })
+          ['date', '所在年份'],
+          ['luckeyStone', '幸运石头']
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop]
+          }
+        })
       }
       return retVal
     },
     descInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['health', '年度健康运势'],
-                    ['career', '年度事业运势'],
-                    ['love', '年度恋情运势'],
-                    ['finance', '年度财富运势'],
-                  ].map(([prop, about]) => {
-                    return {
-                      title: about,
-                      content: this.activePageData[prop][0]
-                    }
-                  })
+          ['health', '年度健康运势'],
+          ['career', '年度事业运势'],
+          ['love', '年度恋情运势'],
+          ['finance', '年度财富运势'],
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop][0]
+          }
+        })
       }
       return retVal
     }

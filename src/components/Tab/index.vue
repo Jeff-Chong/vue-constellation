@@ -1,17 +1,12 @@
 <template>
-  <div class="app-tab border-bottom bg-white">
-    <div class="app-tab-wrapper">
-      <ul class="app-tab-list clearfix m-0 p-0">
-        <li class="app-tab-item float-left fs-xl m-0 p-0 text-center"
+  <div class="fixed inset-x-0 mt-10 bg-purple-200 h-8">
+    <div class="w-full overflow-x-auto">
+      <ul class="clearfix" :style="{width: `${4 * tabData.length}rem`}">
+        <li class="float-left w-16 text-center h-8 leading-8"
           v-for="tab of tabData"
           :key="tab.name"
         >
-          <span
-            :class="{'activeTab': tab.name === activeConsName }"
-            @click="changeActiveTab(tab.data)"
-          >
-            {{ tab.name }}
-          </span>
+          <span>{{ tab.name }}</span>
         </li>
       </ul>
     </div>
@@ -19,14 +14,14 @@
 </template>
 
 <script>
-import tabData from '../../data/tab-list'
+import { tabList } from '../../data'
 export default {
   name: 'app-tab',
   computed: {
     activeConsName () {
       return this.$store.state.activeConsName
     },
-    tabData: () => tabData,
+    tabData: () => tabList,
   },
   methods: {
     changeActiveTab (consName) {

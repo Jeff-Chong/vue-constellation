@@ -1,35 +1,36 @@
 <template>
-  <div class="today-view">
-    <div class="py-1"></div>
+  <layout-view>
+
     <view-banner
-      v-if="activePageData"
-      :image-url="image"
-      :title="activePageData.name"
-      :indicator="activePageData.all"
+      v-if="pageData"
+      :image-url="bannerImg"
+      :title="pageData.name"
+      :indicator="pageData.all"
+      class="py-3"
     ></view-banner>
-    <div class="py-1"></div>
-    <!-- 各项指数 -->
-    <div class="indicators d-flex p-2"
-      v-if="indicators.length > 0"
-    >
-      <div class="indicator flex-1 d-flex flex-column align-center py-3"
+
+    <!-- 各项指数 start -->
+    <div class="flex px-3 mb-3">
+      <div class="flex-1 flex flex-col items-center py-2"
         v-for="indicator of indicators"
         :key="indicator.title"
         :style="{'backgroundColor': indicator.bgColor}"
       >
         <span>{{ indicator.title }}</span>
-        <span class="fs-xxxl mt-2">{{ indicator.number }}</span>
+        <span class="text-xl">{{ indicator.number }}</span>
       </div>
     </div>
-    <div class="py-2"></div>
-    <!-- 基本信息和运势 -->
-    <div class="text-content p-2" v-if="baseInfos.length > 0">
+    <!-- 各项指数 end -->
+
+
+    <!-- 基本信息和运势 start -->
+    <div class="px-3 pb-3">
       <desc-line
         v-for="baseItem of baseInfos"
-        :key="baseItem.prefix"
-        :prefix="baseItem.prefix"
+        :key="baseItem.title"
+        :title="baseItem.title"
         :content="baseItem.content"
-        class="mb-4"
+        class="mb-3"
       ></desc-line>
       <desc-card
         v-for="descItem of descInfos"
@@ -39,76 +40,69 @@
       >
       </desc-card>
     </div>
-  </div>
+    <!-- 基本信息和运势 end -->
+  </layout-view>
 </template>
 
 <script>
-import DescLine from '@/components/DescLine'
-import DescCard from '@/components/DescCard'
-import ViewBanner from '@/components/banner'
-import { DispatchTypeMixin, GetImageMixin } from '../util/mixins'
+import { mapGetters } from 'vuex'
+import { ImageMixin } from '../mixins'
 export default {
   name: 'today-view',
-  mixins: [DispatchTypeMixin, GetImageMixin],
-  components: { DescLine, DescCard, ViewBanner },
+  mixins: [ ImageMixin ],
   computed: {
+    ...mapGetters({
+      pageData: 'currentPageData'
+    }),
     indicators () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['health', '健康指数', '#FFF9D5'],
-                    ['work', '工作指数', '#F4FFFF'],
-                    ['love', '爱情指数', '#FEF6F0'],
-                    ['money', '财运指数', '#FDF8DF']
-                  ].map(([prop, about, bgColor]) => {
-                    return {
-                      title: about,
-                      bgColor,
-                      number: this.activePageData[prop]
-                    }
-                  })
+          ['health', '健康指数', '#FFF9D5'],
+          ['work', '工作指数', '#F4FFFF'],
+          ['love', '爱情指数', '#FEF6F0'],
+          ['money', '财运指数', '#FDF8DF']
+        ].map(([prop, about, bgColor]) => {
+          return {
+            title: about,
+            bgColor,
+            number: this.pageData[prop]
+          }
+        })
       }
       return retVal
     },
     baseInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['datetime', '今日日期'],
-                    ['QFriend', '配对星座'],
-                    ['color', '幸运颜色'],
-                    ['number', '幸运数字']
-                  ].map(([prop, about]) => {
-                    return {
-                      prefix: about,
-                      content: this.activePageData[prop]
-                    }
-                  })
+          ['datetime', '今日日期'],
+          ['QFriend', '配对星座'],
+          ['color', '幸运颜色'],
+          ['number', '幸运数字']
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop]
+          }
+        })
       }
       return retVal
     },
     descInfos () {
       let retVal = []
-      if (this.activePageData) {
+      if (this.pageData) {
         retVal = [
-                    ['summary', '今日运势总结'],
-                  ].map(([prop, about]) => {
-                    return {
-                      title: about,
-                      content: this.activePageData[prop]
-                    }
-                  })
+          ['summary', '今日运势总结'],
+        ].map(([prop, about]) => {
+          return {
+            title: about,
+            content: this.pageData[prop]
+          }
+        })
       }
       return retVal
     }
   }
 }
 </script>
-
-<style lang="scss">
-.today-view {
-  .indicators {
-    box-shadow: 0 3px 5px 1px #ccc;
-  }
-}
-</style>

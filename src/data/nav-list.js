@@ -1,4 +1,4 @@
-export default [
+export const navList = [
   {
     iconText: '今',
     text: '今天',
