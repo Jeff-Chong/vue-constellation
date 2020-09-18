@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import router from './router'
 import './assets/styles/iconfont.css'
-import './assets/styles/main.css'
+import './assets/styles/tailwind.css'
 
 import DescCard from './components/DescCard'
 import DescLine from './components/DescLine'
